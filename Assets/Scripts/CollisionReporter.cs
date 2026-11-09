@@ -2,24 +2,27 @@ using UnityEngine;
 
 public class CollisionReporter : MonoBehaviour
 {
-    private SpriteRenderer spriteRenderer;
-    private Color defaultColor;
+    private PlayerController player;
 
     private void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null) defaultColor = spriteRenderer.color;
+        player = GetComponent<PlayerController>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Enemy") && spriteRenderer != null)
-            spriteRenderer.color = Color.red;
+        Report(collision);
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Enemy") && spriteRenderer != null)
-            spriteRenderer.color = defaultColor;
+        // A contact that outlasts dash/shield protection must still be dangerous.
+        Report(collision);
+    }
+
+    private void Report(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy") && player != null)
+            player.ReceiveEnemyHit();
     }
 }
